@@ -18,6 +18,12 @@ const postApi = {
         const url = `/posts/${data.id}`
         return axiosClient.patch(url,data)
     },
+    updateFormdata(data){
+        const url = `/posts/${data.id}`
+        return axiosClient.patch(url,data,{
+            headers:{'Content-type':'mutipart/form-data'}
+        })
+    },
     remove(id){
         const url = `/posts/${id}`
         return axiosClient.delete(url)
