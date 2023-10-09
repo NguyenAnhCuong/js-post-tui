@@ -1,0 +1,10 @@
+export function setTextContent(parent,selector,text){
+    if (!parent) return
+    const element = parent.querySelector(selector)
+    if (element) element.textContent = text;
+
+}
+export function truncatText(text,maxlength){
+    if ( text.length <= maxlength) return text
+    return `${text.slice(0,maxlength - 1)}…`
+}
