@@ -36,7 +36,12 @@ export function createPostElement(post){
     }
     
     //attach event
-
+    //go to post detail when click on div.post-item
+    const divelement = liElement.firstElementChild
+    if (!divelement) return
+    divelement.addEventListener('click',()=>{
+        window.location.assign(`/postDetail.html?id=${post.id}`)
+    })
     return liElement;
     } catch (error) {
         console.log('failed to create post item',error);
