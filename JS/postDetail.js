@@ -1,12 +1,7 @@
 import dayjs from "dayjs";
 import postApi from "./api/postApi";
-import { setTextContent } from "./util";
-// id="goToEditPageLink
-// id="postHeroImage
-// id="postDetailTitle
-// id="postDetailAuthor
-// id="postDetailTimeSpan
-// id="postDetailDescription
+import { registerLightbox, setTextContent } from "./util";
+
 function rederPostDetail(post){
     if (!post) return
 
@@ -38,6 +33,12 @@ function rederPostDetail(post){
 
 (async () =>{
     try {
+        registerLightbox({
+            modalId : 'lightbox',
+            imageSelector:'img[data-id="lightboxImg"]',
+            prevSelector:'button[data-id="lightboxPrev"]',
+            nextSelector:'button[data-id="lightboxNext"]',
+        })
         //get post id form URL
         //fetch post detail API
         //render post detail
