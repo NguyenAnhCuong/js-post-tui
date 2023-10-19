@@ -40,8 +40,22 @@ export function createPostElement(post){
     const divelement = liElement.firstElementChild
     if (!divelement) return
     divelement.addEventListener('click',()=>{
+        //if event is trigger from menu -> ignore
+        const menu = liElement.querySelector('[data-id="menu"]')
+        if (menu && menu.contains(event.target)) return;
+        
         window.location.assign(`/postDetail.html?id=${post.id}`)
     })
+    const editButton = liElement.querySelector('[data-id="edit"]')
+    if (editButton){
+        editButton.addEventListener('click',(e)=>{
+            console.log('edit click');
+            //prevent event bubbling to parent
+            // e.stopPropagation();
+            window.location.assign(`/editPost.html?id=${post.id}`)
+        })
+    }
+
     return liElement;
     } catch (error) {
         console.log('failed to create post item',error);
