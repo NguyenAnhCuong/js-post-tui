@@ -22,6 +22,6 @@ import { initPostForm } from "./util";
             onSubmit:(formValues) =>console.log('submit',formValues),
         })
     } catch (error) {
-        console.log('fail to fetch post details');
+        console.log('fail to fetch post details',error);
     }
 })()

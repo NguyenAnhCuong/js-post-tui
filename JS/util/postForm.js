@@ -5,7 +5,31 @@ export function initPostForm({formId,defaultValues,onSubmit}){
     if(!form) return
 
     console.log('form',form);
-    setFormValues(defaultValues)
+    setFormValues(form,defaultValues)
+    form.addEventListener('submit',(event)=>{
+        event.preventDefault()
+        //get form values
+        const formValues = getFormValues(form)
+        console.log(formValues);
+        //valiation
+
+    })
+}
+
+function getFormValues(form){
+    const formvalues={}
+    //s1
+    // ['title','author','description','imgaeUrl'].forEach(name=>{
+    //     const field = form.querySelector(`[name ="${name}"]`)
+    //     if (field) values[name] = field.values
+    // })
+    //s2
+    const data = new FormData(form)
+    for(const [key,value] of data){
+        formvalues[key] = value
+    }
+
+    return formvalues
 }
 
 function setFormValues(form,formValues){
