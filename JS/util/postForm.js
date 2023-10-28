@@ -3,16 +3,17 @@ import * as yup from 'yup'
 export function initPostForm({formId,defaultValues,onSubmit}){
     const form = document.getElementById(formId)
     if(!form) return
-
-    console.log('form',form);
     setFormValues(form,defaultValues)
-    form.addEventListener('submit',(event)=>{
+    form.addEventListener('submit',async (event)=>{
         event.preventDefault()
         //get form values
         const formValues = getFormValues(form)
-        console.log(formValues);
+        formValues.id = defaultValues.id
         //valiation
-        if (!validatePostForm(form,formValues)) return
+        const isValid = await validatePostForm(form,formValues)
+        if (!isValid) return
+        onSubmit?.(formValues)
+        console.log('success');
     })
 }
 function getPostSchema(){
@@ -39,25 +40,23 @@ function setFieldError(form,name,error){
 async function validatePostForm(form,formValues){ 
     try {
         //reset previous error
-        ['title','author'].forEach(name => setFieldError(form,name,''))
+        ['title','author'].forEach((name) => setFieldError(form,name,''))
 
         //start validating
         const schema = getPostSchema()
         await schema.validate(formValues,{abortEarly:false})
     } catch (error) {
-        console.log(error.name);
-        console.log(error.inner);
         const errorLog = {}
 
         if (error.name === 'ValidationError' && Array.isArray(error.inner))
-        for (const valiation of error.inner){
-            const name = valiation.path
+        for (const validationError of error.inner){
+            const name = validationError.path
 
             //ignore if the field is already logged
             if (errorLog[name]) continue
 
             //set field error and mark as logged
-            setFieldError(form,name,valiation.message)
+            setFieldError(form,name,validationError.message)
             errorLog[name] = true
         }
     }

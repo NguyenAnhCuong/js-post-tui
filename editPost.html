@@ -75,12 +75,12 @@
               <div class="form-group mb-3">
                 <label for="postTitle">Title</label>
                 <input
+                  id="postTitle"
                   type="text"
                   class="form-control"
                   name="title"
                   placeholder="Eg: Learning JS is fun"
                   required
-                  pattern="[a-zA-Z]*"
                 />
                 <div class="invalid-feedback">
                   Ooops! Please write a nice title for your post &gt;.&lt;
@@ -90,6 +90,7 @@
               <div class="form-group mb-3">
                 <label for="postAuthor">Author</label>
                 <input
+                id="postAuthor"
                   type="text"
                   class="form-control"
                   name="author"
@@ -101,7 +102,7 @@
 
               <div class="form-group mb-3">
                 <label for="postDescription">Description</label>
-                <textarea class="form-control" name="description" rows="3"></textarea>
+                <textarea id="postDescription" class="form-control" name="description" rows="3"></textarea>
               </div>
 
               <div class="mb-3">
