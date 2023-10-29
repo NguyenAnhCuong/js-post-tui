@@ -1,21 +1,63 @@
-import { setBackgroundImage, setFieldValue, setTextContent } from "./common";
+import { randomNumber, setBackgroundImage, setFieldValue, setTextContent } from "./common";
 import * as yup from 'yup'
+import { toast } from "./toast";
 export function initPostForm({formId,defaultValues,onSubmit}){
     const form = document.getElementById(formId)
     if(!form) return
+    let submitting = false
+
     setFormValues(form,defaultValues)
+
+    randomImage(form)
     form.addEventListener('submit',async (event)=>{
         event.preventDefault()
+        if(submitting){
+            return
+        }
+        //show loading/disabled button
+        showLoading(form)
+        submitting = true
+
         //get form values
         const formValues = getFormValues(form)
         formValues.id = defaultValues.id
         //valiation
         const isValid = await validatePostForm(form,formValues)
-        if (!isValid) return
-        onSubmit?.(formValues)
-        console.log('success');
+        if (isValid) await onSubmit?.(formValues)
+        //alway hide loading
+        hideLoading(form)
+        submitting = false
     })
 }
+function showLoading(form){
+    const button = form.querySelector('[name="submit"]')
+    if (button){
+        button.disabled = true
+        button.textContent = 'Saving...'
+    }
+}
+function hideLoading(form){
+    const button = form.querySelector('[name="submit"]')
+    if (button){
+        button.disabled = false
+        button.textContent = 'Save'
+    }
+}
+function randomImage(form){
+    const randombutton = document.getElementById('postChangeImage')
+    if (!randombutton) return
+    randombutton.addEventListener('click',()=>{
+        //random ID
+        //build URL
+        const imageUrl = `https://picsum.photos/id/${randomNumber(1000)}/1368/400`
+
+        //set imageURL input + background
+        setFieldValue(form,'[name="imageUrl"]',imageUrl) //hidden field
+        setBackgroundImage(document,'#postHeroImage',imageUrl)
+        toast.success('Change Img success')
+    })
+}
+
 function getPostSchema(){
     return yup.object().shape({
         title:yup.string().required('pls enter title'),
@@ -27,6 +69,10 @@ function getPostSchema(){
                 'pls enter at least 2 words',
                 (value) =>value.split(' ').filter(x => !!x && x.length >= 3).length >= 2),
         description:yup.string(),
+        imageUrl:yup
+            .string()
+            .required('Pls random a background image')
+            .url('pls enter a valid URL'),
     })
 }
 function setFieldError(form,name,error){
@@ -40,7 +86,7 @@ function setFieldError(form,name,error){
 async function validatePostForm(form,formValues){ 
     try {
         //reset previous error
-        ['title','author'].forEach((name) => setFieldError(form,name,''))
+        ['title','author','imageUrl'].forEach((name) => setFieldError(form,name,''))
 
         //start validating
         const schema = getPostSchema()
@@ -63,7 +109,7 @@ async function validatePostForm(form,formValues){
     //add was-validated class to form element
     const isValid = form.checkValidity()
     if(!isValid) form.classList.add('was-validated')
-    return false
+    return isValid
 }
 
 
