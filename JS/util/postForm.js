@@ -9,6 +9,8 @@ export function initPostForm({formId,defaultValues,onSubmit}){
     setFormValues(form,defaultValues)
 
     randomImage(form)
+    initRadioImageSource(form)
+    initUploadImage(form)
     form.addEventListener('submit',async (event)=>{
         event.preventDefault()
         if(submitting){
@@ -27,6 +29,32 @@ export function initPostForm({formId,defaultValues,onSubmit}){
         //alway hide loading
         hideLoading(form)
         submitting = false
+    })
+}
+function initUploadImage(form){
+    const uploadImage = form.querySelector('[name="image"]')
+    if(!uploadImage) return
+    uploadImage.addEventListener('change',(event)=>{
+        console.log(event.target.files[0]);
+        //get selected file
+        //preview file
+        const file = event.target.files[0]
+        if(file){
+            const imageUrl = URL.createObjectURL(file)
+            setBackgroundImage(document,'#postHeroImage',imageUrl)
+        }
+    })
+}
+function initRadioImageSource(form){
+    const radioList = form.querySelectorAll('[name="imageSource"]')
+    radioList.forEach((radio)=>{
+        radio.addEventListener('change',(event)=>renderImageSourceControl(form,event.target.value))
+    })
+}
+function renderImageSourceControl(form,selectedValue){
+    const controlList = form.querySelectorAll('[data-id="imageSource"]')
+    controlList.forEach((control)=>{
+        control.hidden = control.dataset.imageSource !== selectedValue
     })
 }
 function showLoading(form){
