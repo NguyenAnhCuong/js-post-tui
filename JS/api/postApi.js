@@ -18,10 +18,16 @@ const postApi = {
         const url = `/posts/${data.id}`
         return axiosClient.patch(url,data)
     },
+    addFormdata(data){
+        const url = `/with-thumbnail/posts`
+        return axiosClient.post(url,data,{
+            headers:{'Content-type':'multipart/form-data'}
+        })
+    },
     updateFormdata(data){
-        const url = `/posts/${data.id}`
+        const url = `/with-thumbnail/posts/${data.get('id')}`
         return axiosClient.patch(url,data,{
-            headers:{'Content-type':'mutipart/form-data'}
+            headers:{'Content-type':'multipart/form-data'}
         })
     },
     remove(id){

@@ -1,14 +1,17 @@
 import postApi from "./api/postApi";
 import dayjs from "dayjs";
-import relativeTime from 'dayjs/plugin/relativeTime' 
+import relativeTime from 'dayjs/plugin/relativeTime'
+import { toast } from "./util"; 
 dayjs.extend(relativeTime)
 import { InitPagination,initSearch,renderPostList,renderPagination} from "./util";
 
 async function handleFilterChange(filterName,filterValue){
     
     try {
+        //update query params
         const url = new URL(window.location)
-        url.searchParams.set(filterName,filterValue)
+        if (filterName) url.searchParams.set(filterName,filterValue)
+
         if (filterName === 'title_like') url.searchParams.set('_page',1)
         history.pushState({},'',url)
 
@@ -21,17 +24,35 @@ async function handleFilterChange(filterName,filterValue){
         console.log('fail to catch post list',error);
     }
 }
+function registerPostDeleteEvent(){
+    document.addEventListener('post-delete',async(event)=>{
+        try {
+            const post = event.detail
+            const message = `Remove post "${post.title}"?`
+            if(window.confirm(message)){
+                await postApi.remove(post.id)
+                await handleFilterChange()
+                toast.success('remove post success')
+            }
+            
+        } catch (error) {
+            console.log('fail to remove post',error);
+            toast.error(error.message)
+        }
+    })
+}
 
 (async () =>{
     try {
         const url = new URL(window.location)
 
         //update search params if needed
-        if (url.searchParams.get('_page')) url.searchParams.set('_page',1)
-        if (url.searchParams.get('_limit')) url.searchParams.set('_limit',6)
+        if (!url.searchParams.get('_page')) url.searchParams.set('_page',1)
+        if (!url.searchParams.get('_limit')) url.searchParams.set('_limit',6)
 
         history.pushState({},'',url)
         const queryParams = url.searchParams;
+
         //attach event for link
         InitPagination({
             elementId:'pagination',
@@ -50,9 +71,8 @@ async function handleFilterChange(filterName,filterValue){
         //set default query params if not existed
         console.log(queryParams.toString());
 
-        const {data,pagination} = await postApi.getAll(queryParams)
-        renderPostList('postList',data)
-        renderPagination('pagination',pagination)
+        registerPostDeleteEvent()
+        handleFilterChange()
     } catch (error) {
         console.log('get all failed:',error);
     }
